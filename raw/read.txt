@@ -1,0 +1,5 @@
+As seen in the plot, the FRB signal appears as a distinct vertical feature in the waterfall plot. This is because the data released by the CHIME collaboration has already been de-dispersed (calibrated) to the burst's optimal Dispersion Measure, aligning the signal across all frequency channels.
+
+However, our deep learning model is designed to perform blind detection and regression so it needs to learn how to identify the Dispersion Measure (DM) from raw, curved signals. If we used the de-dispersed data directly, the model would only see straight vertical lines and would fail to learn the relationship between curvature and DM.
+
+Therefore, we apply a re-dispersion step in our data pipeline. We use the known ground-truth DM to artificially apply the physical dispersion delay back onto the signal, effectively "curving" it. This transforms the clean archival data into realistic training examples that mimic how raw signals actually arrive at the telescope.
