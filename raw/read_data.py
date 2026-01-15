@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-file_path = os.path.join('..','data', 'real_frbs', 'FRB20180814A_waterfall.h5')
+file_path = os.path.join('..','data', 'real_frbs', 'FRB20180814A_waterfall.h5') #just took one example file to show visualization but its de-dispersed so just straight lines ig
 
 with h5py.File(file_path, 'r') as f:
     data = f['frb']['wfall'][:]
