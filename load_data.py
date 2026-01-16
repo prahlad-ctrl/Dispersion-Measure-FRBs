@@ -20,7 +20,6 @@ class FRBDataset(Dataset):
                     os.path.join(real_data_dir, "*.h5"))
 
             if len(self.real_files) == 0:
-                print("no .h5 files found. so changes to synthetic mode")
                 self.mode = 'synthetic'
                 self.num_synthetic = 100
 
@@ -60,10 +59,20 @@ class FRBDataset(Dataset):
 
                 freq_new = np.linspace(800, 400, 256)
                 synthetic_time_res = 1000.0 / 256.0
-
                 img = self.redisperse_waterfall(
                     img, dm, freq_new, synthetic_time_res)
-                img = (img - np.mean(img)) / (np.std(img) + 1e-6)
+
+                median = np.median(img)
+                q75, q25 = np.percentile(img, [75, 25])
+                iqr = q75 - q25
+                sigma_robust = iqr / 1.3489
+
+                if sigma_robust == 0:
+                    sigma_robust = 1e-6
+
+                img = np.clip(img, median - 3*sigma_robust,
+                              median + 3*sigma_robust)
+                img = (img - median) / sigma_robust
 
                 return torch.from_numpy(img).float().unsqueeze(0), torch.tensor([dm / 1000.0]).float()
         except Exception as e:

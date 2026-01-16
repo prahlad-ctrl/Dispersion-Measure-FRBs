@@ -11,8 +11,6 @@ EPOCHS = 30
 LR = 0.0001
 REAL_DATA_PATH = "data/real_frbs"
 
-print(f"training on: {DEVICE}")
-
 train_ds = FRBDataset(mode='synthetic', num_synthetic=5000)
 train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
 
@@ -53,7 +51,7 @@ optimizer = optim.AdamW(model.parameters(), lr=LR)
 criterion = nn.MSELoss()
 
 loss_history = []
-print("start training...")
+print("training now")
 
 for epoch in range(EPOCHS):
     model.train()
@@ -79,7 +77,6 @@ torch.save(model.state_dict(), "best_frb_model.pth")
 print("model saved")
 
 if len(val_ds) > 0:
-    print("\nevaluating on Real Data...")
     model.eval()
     preds, actuals = [], []
 
@@ -90,7 +87,7 @@ if len(val_ds) > 0:
             a = target.item() * 1000.0
             preds.append(p)
             actuals.append(a)
-            print(f"   True: {a:.0f} | Pred: {p:.0f}")
+            print(f"True: {a:.0f} vs Pred: {p:.0f}")
 
     mae = sum([abs(p - a) for p, a in zip(preds, actuals)]) / len(preds)
 
