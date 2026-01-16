@@ -1,30 +1,43 @@
 import numpy as np
+import scipy.ndimage as ndimage
 
 
 def gen_synthetic_frb(dm, n_freq=256, n_time=256, freq_low=400, freq_high=800):
-    freqs = np.linspace(freq_high, freq_low, n_freq)
 
+    freqs = np.linspace(freq_high, freq_low, n_freq)
     k_dm = 4.1488e3
 
-    # calculates delay for every single frequency channel (Cold Plasma Dispersion Relation)
     delays_ms = k_dm * dm * ((freqs)**-2 - (freq_high)**-2)
+    time_res = 1000.0 / n_time
+    delay_indices = (delays_ms / time_res).astype(int)
 
-    delay_indices = (delays_ms / 1000.0 * n_time).astype(int)
+    waterfall = np.random.normal(0, 2.0, (n_freq, n_time))
 
-    # bg noise like thermal, sky, etc.
-    waterfall = np.random.normal(0, 1, (n_freq, n_time))
+    channel_gains = np.random.normal(0, 5.0, (n_freq, 1))
+    waterfall += channel_gains
 
-    pulse_width = 5
-    center_time_bin = int(n_time * 0.2)
+    blobs = ndimage.gaussian_filter(
+        np.random.normal(0, 2.0, (n_freq, n_time)), sigma=2.0)
+    waterfall += blobs
+
+    center_time_bin = np.random.randint(int(n_time * 0.15), int(n_time * 0.7))
+    pulse_width = np.random.randint(10, 40)
 
     for i in range(n_freq):
         t_start = center_time_bin + delay_indices[i]
-
         if t_start + pulse_width < n_time:
-            signal_strength = np.random.uniform(5, 15)
-            waterfall[i, t_start: t_start+pulse_width] += signal_strength
+            x = np.linspace(-2, 2, pulse_width)
+            profile = np.exp(-x**2)
 
-    # just so it is advantageous to NN dont think it matters much ig.
+            signal_strength = np.random.uniform(5, 12)
+            waterfall[i, t_start: t_start +
+                      pulse_width] += profile * signal_strength
+
+    waterfall = ndimage.gaussian_filter(waterfall, sigma=(0.5, 1.0))
+
+    std_val = np.std(waterfall)
+    waterfall = np.clip(waterfall, -3*std_val, 3*std_val)
+
     waterfall = (waterfall - np.mean(waterfall)) / (np.std(waterfall) + 1e-6)
 
     return waterfall
