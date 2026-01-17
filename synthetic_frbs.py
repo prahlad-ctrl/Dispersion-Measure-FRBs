@@ -4,7 +4,7 @@ import scipy.ndimage as ndimage
 
 def gen_synthetic_frb(dm, n_freq=256, n_time=256, freq_low=400, freq_high=800):
 
-    freqs = np.linspace(freq_high, freq_low, n_freq)
+    freqs = np.linspace(freq_high, freq_low, 256)
     k_dm = 4.1488e3
 
     delays_ms = k_dm * dm * ((freqs)**-2 - (freq_high)**-2)
