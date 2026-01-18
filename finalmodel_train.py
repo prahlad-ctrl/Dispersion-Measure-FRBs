@@ -51,7 +51,6 @@ optimizer = optim.AdamW(model.parameters(), lr=LR)
 criterion = nn.MSELoss()
 
 loss_history = []
-print("training now")
 
 for epoch in range(EPOCHS):
     model.train()

@@ -26,6 +26,7 @@ class FRBDataset(Dataset):
     def __len__(self):
         return len(self.real_files) if self.mode == 'real' else self.num_synthetic
 
+    # Explained why redispersion is needed in raw/read.txt
     def redisperse_waterfall(self, waterfall, dm, freq_array, time_res_ms):
         k_dm = 4.1488e3
         f_high = freq_array[-1]
