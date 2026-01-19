@@ -14,3 +14,5 @@ I will be adding the comments to most of the files at the end of the project and
 Below is the evaluation on real telescope data, showing the correlation between the True DM and the Predicted DM.
 
 ![Final Evaluation Plot](final_results.png)
+
+playlist that helped me throughout the project and forever - https://www.youtube.com/watch?v=2S1dgHpqCdk&list=PLhhyoLH6IjfxeoooqP9rhU3HJIAVAJ3Vz
