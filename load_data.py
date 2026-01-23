@@ -9,7 +9,7 @@ from synthetic_frbs import gen_synthetic_frb
 
 
 class FRBDataset(Dataset):
-    def __init__(self, mode='synthetic', real_data_dir='data/real_frbs', num_synthetic=5000):
+    def __init__(self, mode= 'synthetic', real_data_dir='data/real_frbs', num_synthetic= 5000):
         self.mode = mode
         self.num_synthetic = num_synthetic
         self.real_files = []

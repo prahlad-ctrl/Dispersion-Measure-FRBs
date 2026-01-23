@@ -5,17 +5,16 @@ from torch.utils.data import DataLoader
 from load_data import FRBDataset
 import matplotlib.pyplot as plt
 
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-BATCH_SIZE = 64
-EPOCHS = 30
-LR = 0.0001
-REAL_DATA_PATH = "data/real_frbs"
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+epochs = 30
+lr = 0.0001
+real_data_path = "data/real_frbs"
 
-train_ds = FRBDataset(mode='synthetic', num_synthetic=5000)
-train_loader = DataLoader(train_ds, batch_size=BATCH_SIZE, shuffle=True)
+train_ds = FRBDataset(mode= 'synthetic', num_synthetic= 5000)
+train_loader = DataLoader(train_ds, batch_size= 64, shuffle= True)
 
-val_ds = FRBDataset(mode='real', real_data_dir=REAL_DATA_PATH)
-val_loader = DataLoader(val_ds, batch_size=1, shuffle=False)
+val_ds = FRBDataset(mode= 'real', real_data_dir=real_data_path)
+val_loader = DataLoader(val_ds, batch_size= 1, shuffle= False)
 if len(val_ds) == 0:
     print("no real files found.")
 
@@ -46,18 +45,18 @@ class DM_Predictor_CNN(nn.Module):
         return self.regressor(self.features(x))
 
 
-model = DM_Predictor_CNN().to(DEVICE)
-optimizer = optim.AdamW(model.parameters(), lr=LR)
+model = DM_Predictor_CNN().to(device)
+optimizer = optim.AdamW(model.parameters(), lr=lr)
 criterion = nn.MSELoss()
 
 loss_history = []
 
-for epoch in range(EPOCHS):
+for epoch in range(epochs):
     model.train()
     running_loss = 0
 
     for images, targets in train_loader:
-        images, targets = images.to(DEVICE), targets.to(DEVICE)
+        images, targets = images.to(device), targets.to(device)
 
         optimizer.zero_grad()
         loss = criterion(model(images), targets)
@@ -66,11 +65,11 @@ for epoch in range(EPOCHS):
         optimizer.step()
         running_loss += loss.item()
 
-    avg_loss = running_loss / len(train_loader)
+    avg_loss = running_loss/ len(train_loader)
     loss_history.append(avg_loss)
 
     if (epoch+1) % 2 == 0:
-        print(f"Epoch {epoch+1}/{EPOCHS} | Loss: {avg_loss:.5f}")
+        print(f"epoch {epochs}, loss: {avg_loss:.5f}")
 
 torch.save(model.state_dict(), "best_frb_model.pth")
 print("model saved")
@@ -81,9 +80,9 @@ if len(val_ds) > 0:
 
     with torch.no_grad():
         for img, target in val_loader:
-            img = img.to(DEVICE)
-            p = model(img).item() * 1000.0
-            a = target.item() * 1000.0
+            img = img.to(device)
+            p = model(img).item()* 1000.0
+            a = target.item()* 1000.0
             preds.append(p)
             actuals.append(a)
             print(f"True: {a:.0f} vs Pred: {p:.0f}")
